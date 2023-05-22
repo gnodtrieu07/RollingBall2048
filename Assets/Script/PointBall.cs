@@ -65,7 +65,7 @@ public class PointBall : MonoBehaviour
         {
             //destroy because the ball has been merged and no longer exists.
             Destroy(gameObject);
-            //after destroy & merge, the isMerged variable will be reset in preparation for the next merge if necessary.
+            //after destroy & merge, the isMerged variable will be reset in preparation for the next merge if necessary
             isMerged = false;
         }
     }
