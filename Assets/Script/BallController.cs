@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class BallController : MonoBehaviour
@@ -75,6 +72,15 @@ public class BallController : MonoBehaviour
     private void UpdateScoreText()
     {
         scoreText.text = health.ToString();
+    }
+
+    public void DamageTraps(int damage) {
+        //if damage is 64, health will be halved.
+        health /= damage;
+        //update the material of the BC based on the current health value after reduce
+        SetMaterial();
+        //decrease the size base on health
+        Resize(-scaleParameter);
     }
 
     private void SetMaterial()

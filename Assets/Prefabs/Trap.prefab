@@ -28,6 +28,7 @@ Transform:
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7280648893795647631}
   m_RootOrder: 0
@@ -51,6 +52,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -92,7 +94,7 @@ GameObject:
   - component: {fileID: 7280648893795647631}
   - component: {fileID: 7097874109457423071}
   - component: {fileID: 7097874109457423064}
-  - component: {fileID: 7097874109457423070}
+  - component: {fileID: 9219609959637663136}
   m_Layer: 0
   m_Name: Trap
   m_TagString: Untagged
@@ -110,6 +112,7 @@ Transform:
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.75, z: 9.24}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7888683301300007383}
   m_Father: {fileID: 0}
@@ -144,7 +147,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.4627275, y: 1.2110436, z: 1.0889763}
   m_Center: {x: -0.022535026, y: -0.41006523, z: -0.005578299}
---- !u!114 &7097874109457423070
+--- !u!114 &9219609959637663136
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -153,7 +156,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7944876635104713269}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd9ea36c4e563b943ba873aca8739ea5, type: 3}
+  m_Script: {fileID: 11500000, guid: 9369437616d583f468fa3739f699b4c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parent: {fileID: 0}
+  ballController: {fileID: 0}
