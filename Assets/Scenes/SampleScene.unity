@@ -6779,6 +6779,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 874387098}
     - target: {fileID: 1045100293650846664, guid: 1d0704ba8ed73a5498588172fb74cfc4, type: 3}
+      propertyPath: targetLinePrefab
+      value: 
+      objectReference: {fileID: 874387096}
+    - target: {fileID: 1045100293650846664, guid: 1d0704ba8ed73a5498588172fb74cfc4, type: 3}
       propertyPath: cubes.Array.data[0]
       value: 
       objectReference: {fileID: 1339520667}

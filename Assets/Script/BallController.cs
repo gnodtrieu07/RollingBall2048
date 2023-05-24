@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class BallController : MonoBehaviour
@@ -14,9 +15,12 @@ public class BallController : MonoBehaviour
     //[SerializeField] private GameObject targetLinePrefab;
     [SerializeField] private Transform targetLine;
     [SerializeField] private GameObject[] cubes;
-
+    //[SerializeField] private Renderer[] cubesss;
 
     private Vector3 scaleParameter = new Vector3(0.1f, 0.1f, 0.1f);
+
+    private bool isBoosting;
+    private GameObject targetCube;
 
     private int health = 2;
     //private int currentScore = 2;
@@ -31,7 +35,10 @@ public class BallController : MonoBehaviour
         isJumping = false;
         isStopped = false;
         rb.velocity = Vector3.forward * speed;
-        targetLine = GameObject.Find("FinishLine").transform;
+        //targetLine = GameObject.Find("FinishLine").transform;
+
+        isBoosting = false; // Khởi tạo biến isBoosting là false
+        rb.velocity = Vector3.forward * speed;
     }
 
     private void Update()
@@ -58,7 +65,13 @@ public class BallController : MonoBehaviour
 
         UpdateScoreText();
 
-        if (isStopped)
+        if (!isBoosting && transform.position.z >= 100f) // Thay 50f bằng vị trí Z của băng rôn
+        {
+            isBoosting = true;
+            Boost(); // Gọi phương thức Boost để tăng tốc chạy
+        }
+
+        if (isJumping || isStopped)
         {
             return;
         }
@@ -147,33 +160,66 @@ public class BallController : MonoBehaviour
             Debug.LogError("Error: Incorrect ParentBall health");
         }
     }
-    void OnTriggerEnter(Collider other)
+
+    private void Boost()
     {
-        // Kiểm tra nếu quả banh va chạm với một trong các cube
-        if (other.CompareTag("Cube"))
+        // Tăng tốc chạy của quả banh
+        rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, speed * 2f); // Tăng gấp đôi tốc độ chạy
+
+        // Tìm ô màu tương ứng và nhảy đến
+        this.targetCube = FindCubeByColor(GetComponent<Renderer>().material.color); // Gọi phương thức FindCubeByColor để tìm ô màu tương ứng
+        if (this.targetCube != null)
         {
-            CubeController cubeController = other.GetComponent<CubeController>();
-            if (cubeController != null)
+            Vector3 targetPosition = this.targetCube.transform.position;
+            float jumpForce = 500f; // Điều chỉnh lực nhảy tùy theo yêu cầu
+            rb.AddForce(new Vector3(0f, jumpForce, 0f)); // Áp dụng lực nhảy lên quả banh
+            StartCoroutine(MoveToTarget(targetPosition)); // Gọi Coroutine để di chuyển quả banh đến vị trí của ô màu tương ứng
+        }
+    }
+
+    private IEnumerator MoveToTarget(Vector3 targetPosition)
+    {
+        // Di chuyển quả banh đến vị trí của ô màu tương ứng
+        float moveDuration = 2f; // Thời gian di chuyển
+        float elapsedTime = 0f;
+        Vector3 startPosition = transform.position;
+
+        while (elapsedTime < moveDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / moveDuration;
+            transform.position = Vector3.Lerp(startPosition, new Vector3(targetPosition.x, transform.position.y,targetPosition.z ), t);
+            yield return null;
+        }
+
+        // Dừng lại và kết thúc game nếu quả banh trùng màu
+        if (GetComponent<Renderer>().material.color == targetCube.GetComponent<Renderer>().material.color)
+        {
+            EndGame(); // Gọi phương thức để kết thúc game
+        }
+        else
+        {
+            // Tiếp tục chạy nếu không trùng màu
+            isJumping = false;
+        }
+    }
+
+    private GameObject FindCubeByColor(Color color)
+    {
+        // Tìm ô màu tương ứng với quả banh
+        foreach (GameObject cube in cubes)
+        {
+            Renderer cubeRenderer = cube.GetComponent<Renderer>();
+            if (cubeRenderer.material.color == color)
             {
-                int pointBall = cubeController.GetPoint(); // Lấy điểm của cube
-
-                if (TryMerge(pointBall))
-                {
-                    // Quả banh nảy dính vào giữa tâm bề mặt ô điểm cube
-                    // Tăng tốc độ của quả banh
-                    rb.velocity = Vector3.zero;
-
-                    // Di chuyển quả banh đến giữa tâm bề mặt ô điểm cube
-                    Vector3 newPosition = other.transform.position;
-                    newPosition.y = transform.position.y;
-                    transform.position = newPosition;
-                }
-                else
-                {
-                    // Quả banh không nảy dính, tiếp tục di chuyển tiếp theo
-                    rb.velocity = Vector3.forward * speed;
-                }
+                return cube;
             }
         }
+        return null;
+    }
+
+    private void EndGame()
+    {
+        Time.timeScale = 0f;
     }
 }
