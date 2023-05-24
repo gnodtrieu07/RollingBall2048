@@ -8,6 +8,8 @@ TagManager:
   - Parent
   - Platform
   - DeathZone
+  - FinishLine
+  - Cube
   layers:
   - Default
   - TransparentFX

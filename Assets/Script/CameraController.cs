@@ -3,9 +3,9 @@
 public class CameraController : MonoBehaviour
 {
     //Reference to Transform of the Sphere
-    public Transform sphereTransform;
+    [SerializeField] private Transform sphereTransform;
     //Distance between camera and Sphere
-    public float distance = 10f;
+    [SerializeField] private float distance = 10f;
     //Deviation between camera position and Sphere
     private Vector3 offset; 
 

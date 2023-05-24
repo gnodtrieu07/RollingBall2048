@@ -4,10 +4,9 @@ using UnityEngine.UI;
 
 public class PointBall : MonoBehaviour
 {
-    public Text scoreText;
-    public BallController ballController;
-    public int health;
-
+    [SerializeField] private Text scoreText;
+    [SerializeField] private BallController ballController;
+    [SerializeField] int health;
     private bool isMerged;
 
     private void Update()
