@@ -14,11 +14,6 @@ public class PointBall : MonoBehaviour
         UpdateScoreText();
     }
 
-    private void OnValidate()
-    {
-        ValidateHealth();
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Parent"))

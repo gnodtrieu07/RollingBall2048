@@ -6,8 +6,6 @@ public class BallController : MonoBehaviour
 {
     [SerializeField] private Text scoreText;
     //[SerializeField] private GameObject winPanel;
-
-
     [SerializeField] private Material[] materials;
 
     [SerializeField] private float speed = 10f;
@@ -15,7 +13,6 @@ public class BallController : MonoBehaviour
     //[SerializeField] private GameObject targetLinePrefab;
     [SerializeField] private Transform targetLine;
     [SerializeField] private GameObject[] cubes;
-    //[SerializeField] private Renderer[] cubesss;
 
     private Vector3 scaleParameter = new Vector3(0.1f, 0.1f, 0.1f);
 
@@ -37,11 +34,10 @@ public class BallController : MonoBehaviour
         rb.velocity = Vector3.forward * speed;
         //targetLine = GameObject.Find("FinishLine").transform;
 
-        isBoosting = false; // Khởi tạo biến isBoosting là false
-        rb.velocity = Vector3.forward * speed;
+        isBoosting = false;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, speed);
         //Set initial horizontal velocity to 0
@@ -59,16 +55,16 @@ public class BallController : MonoBehaviour
                 float force = touch.deltaPosition.x * horizontalForce;
 
                 //Apply horizontal thrust to the ball
-                rb.AddForce(new Vector3(force, 0f, 0f));
+                rb.AddForce(new Vector3(force, 0f, 0f));  
             }
         }
 
         UpdateScoreText();
 
-        if (!isBoosting && transform.position.z >= 100f) // Thay 50f bằng vị trí Z của băng rôn
+        if (!isBoosting && transform.position.z >= 100f)
         {
             isBoosting = true;
-            Boost(); // Gọi phương thức Boost để tăng tốc chạy
+            Boost();
         }
 
         if (isJumping || isStopped)
@@ -81,7 +77,9 @@ public class BallController : MonoBehaviour
     {
         transform.localScale += scale;
     }
-    //check if primaryBall's health value is equal to pointBall(pointBall)
+
+
+    //check if primaryBall's health value is equal to pointBall
     public bool TryMerge(int pointBall)
     {
         if (health == pointBall)
@@ -163,58 +161,90 @@ public class BallController : MonoBehaviour
 
     private void Boost()
     {
-        // Tăng tốc chạy của quả banh
-        rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, speed * 2f); // Tăng gấp đôi tốc độ chạy
+        // Increase the velocity of the Rigidbody along the z-axis by a factor of 1.5
+        rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, speed * 1.5f);
 
-        // Tìm ô màu tương ứng và nhảy đến
-        this.targetCube = FindCubeByColor(GetComponent<Renderer>().material.color); // Gọi phương thức FindCubeByColor để tìm ô màu tương ứng
+        // Find a cube with the same color as the current object's Renderer color
+        this.targetCube = FindCubeByColor(GetComponent<Renderer>().material.color);
+
+        // If a target cube is found
         if (this.targetCube != null)
         {
-            Vector3 targetPosition = this.targetCube.transform.position;
-            float jumpForce = 500f; // Điều chỉnh lực nhảy tùy theo yêu cầu
-            rb.AddForce(new Vector3(0f, jumpForce, 0f)); // Áp dụng lực nhảy lên quả banh
-            StartCoroutine(MoveToTarget(targetPosition)); // Gọi Coroutine để di chuyển quả banh đến vị trí của ô màu tương ứng
+            // Set the jump force value
+            float jumpForce = 20f;
+
+            // Apply an impulse force to the Rigidbody for jumping
+            rb.AddForce(new Vector3(0f, jumpForce, 0f), ForceMode.Impulse);
+
+            // Start a coroutine to move the object to the target position
+            StartCoroutine(MoveToTarget(targetCube.transform.position, this.targetCube));
         }
     }
 
-    private IEnumerator MoveToTarget(Vector3 targetPosition)
+
+    // Coroutine to move the object to the target position
+    private IEnumerator MoveToTarget(Vector3 targetPosition, GameObject targetCube)
     {
-        // Di chuyển quả banh đến vị trí của ô màu tương ứng
-        float moveDuration = 2f; // Thời gian di chuyển
+        // Set the duration of the movement
+        float moveDuration = 4f;
+
+        // Track the elapsed time during the movement
         float elapsedTime = 0f;
+
+        // Store the initial position of the object
         Vector3 startPosition = transform.position;
 
+        // While the elapsed time is less than the move duration
         while (elapsedTime < moveDuration)
         {
-            elapsedTime += Time.deltaTime;
+            // Increase the elapsed time by the fixed delta time
+            elapsedTime += Time.fixedDeltaTime;
+
+            // Calculate the normalized progress of the movement
             float t = elapsedTime / moveDuration;
-            transform.position = Vector3.Lerp(startPosition, new Vector3(targetPosition.x, transform.position.y,targetPosition.z ), t);
+
+            // Move the object towards the target position using Rigidbody.MovePosition
+            rb.MovePosition(Vector3.Lerp(startPosition, new Vector3(targetPosition.x, transform.position.y, targetPosition.z), t));
+
+            // Wait for the next frame
             yield return null;
         }
 
-        // Dừng lại và kết thúc game nếu quả banh trùng màu
+        // Check if the color of the current object matches the color of the target cube
         if (GetComponent<Renderer>().material.color == targetCube.GetComponent<Renderer>().material.color)
         {
-            EndGame(); // Gọi phương thức để kết thúc game
+            // Call the end game function
+            EndGame();
         }
         else
         {
-            // Tiếp tục chạy nếu không trùng màu
+            // Set the jumping flag to false
             isJumping = false;
         }
     }
 
+
+    // Find a cube with a specific color
     private GameObject FindCubeByColor(Color color)
     {
-        // Tìm ô màu tương ứng với quả banh
-        foreach (GameObject cube in cubes)
+        // Iterate through the array of cubes
+        for (int i = 0; i < cubes.Length; i++)
         {
-            Renderer cubeRenderer = cube.GetComponent<Renderer>();
-            if (cubeRenderer.material.color == color)
+            // Get the Renderer component of the current cube
+            Renderer cubeRenderer = cubes[i].GetComponent<Renderer>();
+
+            // Check if the color of the cube matches the specified color
+            if (cubeRenderer.material.color.Equals(color))
             {
-                return cube;
+                // Log a debug message indicating the cube was found
+                Debug.Log("Found");
+
+                // Return the cube if a match is found
+                return cubes[i];
             }
         }
+
+        // Return null if no cube with a matching color is found
         return null;
     }
 

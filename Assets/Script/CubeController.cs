@@ -2,7 +2,8 @@
 
 public class CubeController : MonoBehaviour
 {
-    [SerializeField] private int point; // Điểm của cube
+    //Point of cube
+    [SerializeField] private int point; 
 
     public int GetPoint()
     {
