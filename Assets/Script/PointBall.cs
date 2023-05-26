@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class PointBall : MonoBehaviour
 {
     [SerializeField] private Text scoreText;
-    [SerializeField] private BallController ballController;
+    [SerializeField] private Ball ballController;
     [SerializeField] int health;
     private bool isMerged;
 
@@ -25,29 +25,6 @@ public class PointBall : MonoBehaviour
     private void UpdateScoreText()
     {
         scoreText.text = health.ToString();
-    }
-
-    //check the validity of the health value.
-    private void ValidateHealth()
-    {
-        //checks if the value health is in the list of valid numbers (2, 4, 8, ...) or not.
-        int[] validNumbers = { 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
-
-        //Check if health is valid by calling IsValidHealth() method. If invalid, it sets health to 0
-        if (!IsValidHealth())
-        {
-            health = 0;
-            Debug.LogError("Error");
-        }
-
-        //check if the value health is in the validNumbers array.
-        bool IsValidHealth()
-        {
-            //Find value health in validNumbers
-            //If the value health is found in the array, the method returns the index of that value.
-            //If not found, the method will return -1.
-            return Array.IndexOf(validNumbers, health) != -1; //!= -1 is used to check if the value health exists in the array.
-        }
     }
 
     private void TryMergeWithParent()

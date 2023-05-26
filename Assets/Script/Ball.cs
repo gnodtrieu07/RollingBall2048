@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BallController : MonoBehaviour
+public class Ball : MonoBehaviour
 {
     [SerializeField] private Text scoreText;
     //[SerializeField] private GameObject winPanel;
@@ -10,9 +10,12 @@ public class BallController : MonoBehaviour
 
     [SerializeField] private float speed = 10f;
     [SerializeField] private float horizontalForce = 2f;
-    //[SerializeField] private GameObject targetLinePrefab;
-    [SerializeField] private Transform targetLine;
+
+    [SerializeField] private GameObject targetLinePrefab;
+    //[SerializeField] private Transform targetLine;
     [SerializeField] private GameObject[] cubes;
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] private GameManager gameManager;
 
     private Vector3 scaleParameter = new Vector3(0.1f, 0.1f, 0.1f);
 
@@ -23,9 +26,10 @@ public class BallController : MonoBehaviour
     //private int currentScore = 2;
     private bool isJumping;
     private bool isStopped;
+    private bool isRunningOnRamp;
+    private int targetCubeIndex;
+    private Vector3 targetPosition;
 
-
-    [SerializeField] Rigidbody rb;
 
     private void Start()
     {
@@ -33,13 +37,15 @@ public class BallController : MonoBehaviour
         isStopped = false;
         rb.velocity = Vector3.forward * speed;
         //targetLine = GameObject.Find("FinishLine").transform;
-
-        isBoosting = false;
+        isRunningOnRamp = false;
+        //isBoosting = false;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, speed);
+
+
         //Set initial horizontal velocity to 0
         Vector3 horizontalVelocity = rb.velocity;
         horizontalVelocity.x = 0f;
@@ -67,7 +73,7 @@ public class BallController : MonoBehaviour
             Boost();
         }
 
-        if (isJumping || isStopped)
+        if (isStopped)
         {
             return;
         }
@@ -90,9 +96,10 @@ public class BallController : MonoBehaviour
             SetMaterial();
             //change position of ParentBall by calling Resize method with scaleParameter
             Resize(scaleParameter);
-
+            gameManager.PlayMergeSound();
             return true;
         }
+        gameManager.PlayHitSound();
         //if health is not equal to pointBall, the method will return false and not collision.
         return false;
     }
@@ -109,6 +116,7 @@ public class BallController : MonoBehaviour
         SetMaterial();
         //decrease the size base on health
         Resize(-scaleParameter);
+        gameManager.PlayDamageSound();
 
         if (health >= 1)
         {
@@ -116,7 +124,7 @@ public class BallController : MonoBehaviour
             GameObject newBall = Instantiate(gameObject, transform.position, Quaternion.identity);
 
             // Get the BallController component of the new ball
-            BallController newBallController = newBall.GetComponent<BallController>();
+            Ball newBallController = newBall.GetComponent<Ball>();
 
             // Set the health of the new ball to the remaining health
             newBallController.health = health;
@@ -131,15 +139,14 @@ public class BallController : MonoBehaviour
             Destroy(newBall.GetComponent<Rigidbody>());
 
             // Remove the BallController component from the new ball to stop it from following the original ball
-            Destroy(newBall.GetComponent<BallController>());
+            Destroy(newBall.GetComponent<Ball>());
         }
         else
         {
             // If health is less than 1, destroy the ball
             Destroy(gameObject);
         }
-    }
-
+    } 
     private void SetMaterial()
     {
         //using Log to make the value of health is a power of 2
@@ -214,6 +221,7 @@ public class BallController : MonoBehaviour
         if (GetComponent<Renderer>().material.color == targetCube.GetComponent<Renderer>().material.color)
         {
             // Call the end game function
+            gameManager.PlayWinSound();
             EndGame();
         }
         else

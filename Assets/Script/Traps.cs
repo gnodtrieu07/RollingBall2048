@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Traps : MonoBehaviour
 {
-    [SerializeField] private BallController ballController;
+    [SerializeField] private Ball ballController;
     //time between subsequent attacks
     private float reloadTime = 1f;
     //counts the time elapsed since the last attack

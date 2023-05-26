@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class CameraController : MonoBehaviour
+public class CameraFollow : MonoBehaviour
 {
     //Reference to Transform of the Sphere
     [SerializeField] private Transform sphereTransform;

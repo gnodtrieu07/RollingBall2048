@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class CubeController : MonoBehaviour
+public class CubeCheck : MonoBehaviour
 {
     //Point of cube
     [SerializeField] private int point; 

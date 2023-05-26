@@ -4,15 +4,28 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [Header("Audio")]
+    [SerializeField] private AudioSource mergeSound;
+    [SerializeField] private AudioSource damageSound;
+    [SerializeField] private AudioSource hitSound;
+    [SerializeField] private AudioSource winSound;
+
+    public void PlayMergeSound()
     {
-        
+        mergeSound.Play();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void PlayDamageSound()
     {
-        
+        damageSound.Play();
+    }
+
+    public void PlayHitSound()
+    {
+        hitSound.Play();
+    }
+    public void PlayWinSound()
+    {
+        winSound.Play();
     }
 }
